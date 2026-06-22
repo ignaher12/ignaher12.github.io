@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ignacio · dev portfolio</title>
+  <meta name="description" content="Portfolio de desarrollo — Backend & Machine Learning / IA. Navegá con una terminal interactiva." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Top bar (estilo ventana de editor / terminal) -->
+  <header class="topbar">
+    <div class="topbar-brand" aria-hidden="true">
+      <span class="brand-prompt">&gt;_</span>
+      <span class="topbar-title">ignacio@portfolio</span>
+    </div>
+    <div class="topbar-actions">
+      <button id="view-toggle" class="view-toggle" type="button" aria-pressed="false">
+        Ver modo clásico
+      </button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- ===================== MODO TERMINAL ===================== -->
+    <section id="terminal-view" class="terminal" aria-label="Terminal interactiva">
+      <div id="terminal-output" class="terminal-output" aria-live="polite"></div>
+      <form id="terminal-form" class="terminal-input-line" autocomplete="off">
+        <label for="terminal-input" id="prompt-label" class="prompt"></label>
+        <input
+          id="terminal-input"
+          class="terminal-input"
+          type="text"
+          spellcheck="false"
+          autocapitalize="off"
+          autocomplete="off"
+          aria-label="Entrada de comandos"
+        />
+      </form>
+      <div class="hint-bar" id="hint-bar"></div>
+    </section>
+
+    <!-- ===================== MODO CLÁSICO ===================== -->
+    <section id="classic-view" class="classic hidden" aria-label="Vista clásica de proyectos">
+      <div id="classic-content"></div>
+    </section>
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/classic.js"></script>
+  <script src="js/terminal.js"></script>
+</body>
+</html>
