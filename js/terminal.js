@@ -382,14 +382,19 @@
 
   /* ---------------- Banner inicial ---------------- */
   function boot() {
-    print(`<span class="banner txt-bold">  ╭─────────────────────────────────────────╮</span>`);
-    print(`<span class="banner txt-bold">  │   ${esc(profile.name)} · dev portfolio${" ".repeat(Math.max(0, 21 - profile.name.length))}│</span>`);
-    print(`<span class="banner txt-bold">  ╰─────────────────────────────────────────╯</span>`);
+         
+  print(`<span class="banner txt-bold">      ▀▄   ▄▀
+     ▄█▀███▀█▄
+    █▀███████▀█  ${esc(profile.name)} · dev portfolio${" ".repeat(Math.max(0, 21 - profile.name.length))}
+    ▀ ▀▄▄ ▄▄▀ ▀</span>`);
     print("");
+    print("\n");
+
     print(`<span class="txt-accent">${esc(profile.role)}</span>`);
     print(`<span class="txt-dim">Bienvenido. Escribí <span class="txt-yellow">help</span> para empezar.</span>`);
     print(`<span class="txt-dim">¿Sos de los que prefieren la versión GUI? Tocá <span class="txt-teal">"Ver modo clásico"</span> arriba a la derecha.</span>`);
     print("");
+
     updatePrompt();
     inputEl.focus();
   }
