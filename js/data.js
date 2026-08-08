@@ -21,7 +21,7 @@ const PORTFOLIO = {
     name: "Ignacio Hernando",
     handle: "ignacio-hernando",            
     role: "Ingeniero en Sistemas · Full-Stack (backend focus) & Machine Learning / IA",
-    location: "Mar del Plata, Argentina",        
+    location: "Argentina",        
     bio: [
         "Ingeniero en Sistemas (UNICEN) especializado en desarrollo web",
         "Full-Stack y arquitectura de software. Continúo mi formación con",
@@ -29,10 +29,12 @@ const PORTFOLIO = {
         "",
         "Construyo APIs y aplicaciones robustas —del backend al frontend—",
         "y me interesa la integración de IA/ML aplicada a",
-        "la resolución de problemas concretos, cuando aportan valor real."
+        "la resolución de problemas concretos, cuando aportan valor real.",
+        "",
+        "Actualmente desarrollo Karta."
     ],
     skills: {
-      "Backend": ["JavaScript", "Python", "Nest.js", "Bun.js", "FastAPI", "API REST", "Java"],
+      "Backend": ["JavaScript","TypeScript", "Python", "Nest.js", "Bun.js", "FastAPI", "API REST", "Java"],
       "Frontend": ["React (MERN)", "Astro", "Tailwind CSS"],
       "Bases de datos": ["PostgreSQL", "MySQL", "SQLite", "Prisma"],
       "ML / IA": ["scikit-learn", "pandas", "NumPy", "LLMs", "RAG", "ChromaDB"],
@@ -55,10 +57,10 @@ const PORTFOLIO = {
       name: "Karta",
       status: "en producción ·",
       tags: ["★", "Producto comercial", "SaaS", "B2B"],
-      summary: "CRM SaaS B2B multi-tenant para agencias de viaje.",
+      summary: "Sistema de gestión SaaS B2B multi-tenant para agencias de viaje.",
       readme: [
-        "Sistema de gestión (CRM) SaaS B2B multi-tenant para agencias de",
-        "viaje. Producto real, proximamente en producción.",
+        "Sistema de gestión SaaS B2B multi-tenant para agencias de",
+        "viaje.",
         "",
         "Highlights:",
         "  - Arquitectura multi-tenant (aislamiento por agencia vía JWT)",
@@ -70,14 +72,14 @@ const PORTFOLIO = {
       stack: ["NestJS", "React", "Prisma", "PostgreSQL", "TanStack Query", "Docker"],
       links: {
         repo: "",   // privado
-        demo: "",   // si tenés landing/demo pública, pegala acá
+        demo: "https://karta.com.ar/",   // si tenés landing/demo pública, pegala acá
       },
     },
     {
       id: "nowaste",
       name: "NoWaste",
       status: "no finalizado ·",
-      tags: ["★", "Practicas profesionales" ,"Equipo", "ISISTAN"],
+      tags: ["★", "Prácticas profesionales" ,"Equipo", "ISISTAN"],
       summary: "Marketplace para reducir el desperdicio de alimentos.",
       readme: [
         "Marketplace que conecta comercios con clientes para reducir el",
