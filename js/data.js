@@ -31,7 +31,8 @@ const PORTFOLIO = {
         "y me interesa la integración de IA/ML aplicada a",
         "la resolución de problemas concretos, cuando aportan valor real.",
         "",
-        "Actualmente desarrollo Karta."
+        "Actualmente trabajo como Desarrollador Full-Stack en Grupo BECON",
+        "y desarrollo Karta."
     ],
     skills: {
       "Backend": ["JavaScript","TypeScript", "Python", "Nest.js", "Bun.js", "FastAPI", "API REST", "Java"],
