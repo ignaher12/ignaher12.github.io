@@ -5,53 +5,157 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ignacio Hernando · portfolio</title>
   <link rel="icon" type="image/png" href="assets/favicon.png" />
-  <meta name="description" content="Desarrollador Backend & Machine Learning / IA. Portfolio con estilo de terminal interactiva." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <meta name="description" content="Desarrollador Backend & Machine Learning / IA. Portfolio con forma de escritorio retro y terminal interactiva." />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-  <!-- Top bar (estilo ventana de editor / terminal) -->
-  <header class="topbar">
-    <div class="topbar-brand" aria-hidden="true">
-      <span class="brand-prompt">&gt;_</span>
-      <span class="topbar-title">ignacio-hernando@portfolio</span>
-    </div>
-    <div class="topbar-actions">
-      <button id="view-toggle" class="view-toggle" type="button" aria-pressed="false">
-        Ver modo clásico
-      </button>
-    </div>
-  </header>
+  <!-- ===================== ESCRITORIO ===================== -->
+  <main id="desktop" class="desktop">
+    <nav id="desktop-icons" class="desktop-icons" aria-label="Iconos del escritorio"></nav>
+    <button id="recycle-bin" class="desktop-icon recycle-bin" type="button"></button>
 
-  <main class="layout">
-    <!-- ===================== MODO TERMINAL ===================== -->
-    <section id="terminal-view" class="terminal" aria-label="Terminal interactiva">
-      <div id="terminal-output" class="terminal-output" aria-live="polite"></div>
-      <form id="terminal-form" class="terminal-input-line" autocomplete="off">
-        <label for="terminal-input" id="prompt-label" class="prompt"></label>
-        <input
-          id="terminal-input"
-          class="terminal-input"
-          type="text"
-          spellcheck="false"
-          autocapitalize="off"
-          autocomplete="off"
-          aria-label="Entrada de comandos"
-        />
-      </form>
-      <div class="hint-bar" id="hint-bar"></div>
+    <!-- Ventana: terminal -->
+    <section id="win-terminal" class="xp-window" aria-label="Terminal interactiva">
+      <div id="terminal-view" class="terminal">
+        <div id="terminal-scroll" class="terminal-scroll">
+          <div id="terminal-output" class="terminal-output" aria-live="polite"></div>
+          <form id="terminal-form" class="terminal-input-line" autocomplete="off">
+            <label for="terminal-input" id="prompt-label" class="prompt"></label>
+            <input
+              id="terminal-input"
+              class="terminal-input"
+              type="text"
+              spellcheck="false"
+              autocapitalize="off"
+              autocomplete="off"
+              aria-label="Entrada de comandos"
+            />
+          </form>
+        </div>
+        <div class="hint-bar" id="hint-bar"></div>
+      </div>
     </section>
 
-    <!-- ===================== MODO CLÁSICO ===================== -->
-    <section id="classic-view" class="classic hidden" aria-label="Vista clásica de proyectos">
-      <div id="classic-content"></div>
+    <!-- Ventana: versión gráfica -->
+    <section id="win-portfolio" class="xp-window hidden" aria-label="Versión gráfica del portfolio">
+      <div class="explorer">
+        <div class="explorer-menu" aria-hidden="true">
+          <span>Archivo</span><span>Edición</span><span>Ver</span><span>Favoritos</span><span>Herramientas</span><span>Ayuda</span>
+        </div>
+        <div class="explorer-toolbar">
+          <button id="nav-back" class="tool-button" type="button" disabled></button>
+          <button id="nav-forward" class="tool-button" type="button" disabled></button>
+          <button id="nav-up" class="tool-button" type="button" disabled></button>
+          <span class="tool-separator"></span>
+          <button id="nav-search" class="tool-button" type="button" disabled></button>
+          <button id="nav-folders" class="tool-button" type="button"></button>
+          <span class="tool-separator"></span>
+          <button id="nav-views" class="tool-button" type="button" disabled></button>
+        </div>
+        <div class="explorer-address">
+          <span class="address-label">Dirección</span>
+          <div class="address-field"><span id="address-icon" class="address-icon"></span><span id="address-path"></span><span class="address-arrow" aria-hidden="true"></span></div>
+          <span id="address-go" class="address-go"></span>
+        </div>
+        <div class="explorer-main">
+          <aside id="explorer-pane" class="explorer-pane"></aside>
+          <section id="classic-view" class="classic">
+            <div id="classic-content"></div>
+          </section>
+        </div>
+        <div id="explorer-status" class="status-bar"></div>
+      </div>
     </section>
   </main>
 
+  <!-- ===================== MENÚ INICIO Y BARRA DE TAREAS ===================== -->
+  <div id="start-menu" class="start-menu hidden" role="menu" aria-label="Menú Inicio"></div>
+
+  <footer class="taskbar">
+    <button id="start-button" class="start-button" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="start-menu"></button>
+    <div id="taskbar-windows" class="taskbar-windows"></div>
+    <div class="tray">
+      <span id="tray-icons" class="tray-icons"></span>
+      <time id="clock"></time>
+    </div>
+  </footer>
+
+  <div id="balloon" class="balloon hidden" role="status"></div>
+
+  <!-- Cuadro de mensaje -->
+  <div id="msgbox" class="msgbox hidden" role="alertdialog" aria-modal="true" aria-labelledby="msgbox-title">
+    <div class="msgbox-dialog">
+      <header class="xp-titlebar">
+        <span id="msgbox-title" class="xp-title"></span>
+        <span class="xp-controls"><button id="msgbox-x" type="button" class="xp-btn xp-close" aria-label="Cerrar"></button></span>
+      </header>
+      <div class="msgbox-body">
+        <span class="msgbox-icon" aria-hidden="true">i</span>
+        <p id="msgbox-text"></p>
+      </div>
+      <div class="msgbox-actions"><button id="msgbox-ok" type="button" class="xp-push">Aceptar</button></div>
+    </div>
+  </div>
+
+  <!-- Diálogo de apagado -->
+  <div id="power-dialog" class="power-dialog hidden" role="dialog" aria-modal="true" aria-label="Apagar equipo">
+    <div class="power-box">
+      <header>Apagar equipo</header>
+      <div id="power-options" class="power-options"></div>
+      <footer><button id="power-cancel" type="button" class="xp-push">Cancelar</button></footer>
+    </div>
+  </div>
+
+  <!-- Arranque: BIOS y pantalla de inicio de sesión -->
+  <div id="boot" class="boot hidden">
+    <div id="bios" class="bios">
+      <div class="bios-main">
+        <img src="assets/xp/bios__primary_logo.png" width="200" alt="" />
+        <img src="assets/xp/bios__loading_bar.gif" width="150" alt="" />
+      </div>
+      <div class="bios-meta">
+        <img src="assets/xp/bios__copyright.png" width="200" alt="" />
+        <img src="assets/xp/bios__secondary_logo.png" width="75" alt="" />
+      </div>
+    </div>
+
+    <div id="login" class="login hidden">
+      <div class="login-band"></div>
+      <div class="login-main">
+        <div class="login-details">
+          <img class="login-logo" src="assets/xp/logo__windows_xp.png" width="150" alt="" />
+          <h3 class="login-hint">Para comenzar, hacé click en tu nombre de usuario</h3>
+          <h1 class="login-welcome">bienvenido</h1>
+        </div>
+        <span class="login-separator"></span>
+        <button id="login-user" class="login-user" type="button">
+          <img src="assets/xp/avatar__skateboard.png" width="50" height="50" alt="" />
+          <span>
+            <strong id="login-name"></strong>
+            <small>Cargando la configuración personal...</small>
+          </span>
+        </button>
+      </div>
+      <div class="login-band login-footer">
+        <button id="login-off" class="login-off" type="button">
+          <img src="assets/xp/icon__shut_down--large.png" width="22" height="22" alt="" />
+          <span>Apagar equipo</span>
+        </button>
+        <p>Hacé click en tu nombre para entrar al portfolio.</p>
+      </div>
+    </div>
+  </div>
+
+  <button id="shutdown" class="shutdown hidden" type="button">
+    <span>Ya podés apagar tu equipo con seguridad.</span>
+    <small>Hacé click para volver a encenderlo</small>
+  </button>
+
+  <script src="js/icons.js"></script>
+  <script src="js/sounds.js"></script>
   <script src="js/data.js"></script>
   <script src="js/classic.js"></script>
   <script src="js/terminal.js"></script>
+  <script src="js/xp.js"></script>
 </body>
 </html>

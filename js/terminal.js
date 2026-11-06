@@ -24,6 +24,7 @@
   const inputEl = document.getElementById("terminal-input");
   const promptLabel = document.getElementById("prompt-label");
   const hintBar = document.getElementById("hint-bar");
+  const scrollEl = document.getElementById("terminal-scroll");
 
   /* ---------------- Utilidades de salida ---------------- */
   const esc = (s) =>
@@ -32,8 +33,11 @@
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
 
+  // Ruta visible estilo cmd.exe; `cwd` sigue siendo "~" o el id del proyecto.
+  const currentPath = () => `C:\\Portfolio${cwd === "~" ? "" : "\\" + cwd}`;
+
   function promptHTML() {
-    return `<span class="prompt"><span class="user">${esc(profile.handle)}</span>@portfolio:<span class="path">${esc(cwd)}</span>$</span>`;
+    return `<span class="prompt">${esc(currentPath())}&gt;</span>`;
   }
 
   function print(html) {
@@ -44,11 +48,11 @@
   }
 
   function printCommandEcho(raw) {
-    print(`<span class="line cmd">${promptHTML()} ${esc(raw)}</span>`);
+    print(`<span class="line cmd">${promptHTML()}${esc(raw)}</span>`);
   }
 
   function scrollToBottom() {
-    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+    scrollEl.scrollTop = scrollEl.scrollHeight;
   }
 
   function updatePrompt() {
@@ -89,8 +93,10 @@
         ["contact", "cómo contactarme"],
         ["cv", "abre/descarga mi CV en PDF"],
         ["open &lt;repo|demo&gt;", "abre el link del proyecto actual"],
+        ["gui", "abre la versión gráfica del portfolio"],
         ["neofetch", "info del sistema"],
         ["clear", "limpia la pantalla"],
+        ["exit", "cierra la terminal"],
       ];
       print('<span class="txt-dim">Comandos disponibles:</span>');
       rows.forEach(([cmd, desc]) => {
@@ -137,7 +143,7 @@
     },
 
     pwd() {
-      print(`/home/${esc(profile.handle)}/${cwd === "~" ? "" : esc(cwd)}`);
+      print(esc(currentPath()));
     },
 
     whoami() {
@@ -228,12 +234,22 @@
     clear() {
       outputEl.innerHTML = "";
     },
+
+    gui() {
+      print('<span class="txt-dim">abriendo Mi Portfolio…</span>');
+      window.XP.open("portfolio");
+    },
+
+    exit() {
+      window.XP.close("terminal");
+    },
   };
 
   // Aliases
   commands.cls = commands.clear;
   commands.dir = commands.ls;
   commands.resume = commands.cv;
+  commands.portfolio = commands.gui;
 
   /* ---------------- Ejecutor ---------------- */
   function run(raw) {
@@ -365,23 +381,14 @@
     hintBar.appendChild(chip);
   });
 
-  /* ---------------- Toggle terminal / clásico ---------------- */
-  const toggleBtn = document.getElementById("view-toggle");
-  const terminalView = document.getElementById("terminal-view");
-  const classicView = document.getElementById("classic-view");
-  let classic = false;
+  /* ---------------- Versión gráfica ---------------- */
   renderClassicView();
-  toggleBtn.addEventListener("click", () => {
-    classic = !classic;
-    terminalView.classList.toggle("hidden", classic);
-    classicView.classList.toggle("hidden", !classic);
-    toggleBtn.textContent = classic ? "Ver modo terminal" : "Ver modo clásico";
-    toggleBtn.setAttribute("aria-pressed", String(classic));
-    if (!classic) inputEl.focus();
-  });
 
   /* ---------------- Banner inicial ---------------- */
   function boot() {
+    print(`Portfolio [Versión 5.1.2600]`);
+    print(`(C) Copyright ${new Date().getFullYear()} ${esc(profile.name)}.`);
+    print("");
          
   print(`<span class="banner txt-bold">      ▀▄   ▄▀
      ▄█▀███▀█▄
@@ -392,7 +399,7 @@
 
     print(`<span class="txt-accent">${esc(profile.role)}</span>`);
     print(`<span class="txt-dim">Bienvenido. Escribí <span class="txt-yellow">help</span> para empezar.</span>`);
-    print(`<span class="txt-dim">¿Sos de los que prefieren la versión GUI? Tocá <span class="txt-teal">"Ver modo clásico"</span> arriba a la derecha.</span>`);
+    print(`<span class="txt-dim">¿Preferís la versión gráfica? Abrí <span class="txt-teal">Mi Portfolio</span> en el escritorio o escribí <span class="txt-yellow">gui</span>.</span>`);
     print("");
 
     updatePrompt();

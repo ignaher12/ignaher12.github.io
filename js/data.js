@@ -21,7 +21,8 @@ const PORTFOLIO = {
     name: "Ignacio Hernando",
     handle: "ignacio-hernando",            
     role: "Ingeniero en Sistemas · Full-Stack (backend focus) & Machine Learning / IA",
-    location: "Argentina",        
+    location: "Argentina",
+    current: "Desarrollador Full-Stack en Grupo BECON",   // aparece en el menú Inicio
     bio: [
         "Ingeniero en Sistemas (UNICEN) especializado en desarrollo web",
         "Full-Stack y arquitectura de software. Continúo mi formación con",

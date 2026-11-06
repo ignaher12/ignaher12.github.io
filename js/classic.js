@@ -1,154 +1,147 @@
 /* ============================================================
-   VISTA CLÁSICA
-   Cards compactas (resumen) que, al clickearlas, abren un modal
-   con la información completa del proyecto (readme, stack, links).
+   VERSIÓN GRÁFICA
+   Explorador de archivos: la carpeta raíz lista el perfil y los
+   proyectos; cada proyecto se abre como una subcarpeta con su
+   detalle. Atrás, Adelante y Arriba navegan por ese historial.
    Usa los mismos datos de data.js.
    ============================================================ */
 
 function renderClassicView() {
   const { profile, projects } = PORTFOLIO;
-  const el = (s) => (s || "");
+  const $ = (id) => document.getElementById(id);
   const esc = (s) =>
     String(s)
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
 
+  const ROOT = "C:\\Usuarios\\Ignacio\\Mi Portfolio";
   const projectsById = Object.fromEntries(projects.map((p) => [p.id, p]));
+  const content = $("classic-content");
+  const scroller = $("classic-view");
 
-  // Bio: junto las líneas en párrafos que fluyen a todo el ancho.
-  // Un string vacío en el array separa párrafos.
-  const bioParas = [];
-  let buf = [];
-  profile.bio.forEach((l) => {
-    if (l === "") { if (buf.length) { bioParas.push(buf.join(" ")); buf = []; } }
-    else buf.push(l);
-  });
-  if (buf.length) bioParas.push(buf.join(" "));
-  const bioHtml = bioParas.map((para) => `<p class="bio">${esc(para)}</p>`).join("");
+  // Una entrada por carpeta visitada; null es la raíz.
+  let trail = [null];
+  let position = 0;
 
-  /* ---------- Cards compactas (bento) ---------- */
-  const projectCards = projects
-    .map((p) => {
-      const stack = p.stack.map((t) => `<span class="tag">${esc(t)}</span>`).join("");
-      const catTags = (p.tags || [])
-        .map((t) => `<span class="cat-tag">${esc(t)}</span>`)
-        .join("");
-      const featured = (p.tags || []).includes("★") ? " featured" : "";
-      return `
-        <article class="project-card${featured}" data-id="${esc(p.id)}" tabindex="0" role="button"
-                 aria-label="Ver detalle de ${esc(p.name)}">
-          <div class="card-head">
-            <h3>${esc(p.name)}</h3>
-            <div class="cat-tag-row">${catTags}</div>
-          </div>
-          <div class="status">● ${esc(p.status)}</div>
-          <p>${esc(p.summary)}</p>
-          <div class="tag-row">${stack}</div>
-          <div class="card-more">Ver detalle →</div>
-        </article>`;
-    })
-    .join("");
-
-  const skillGroups = Object.entries(profile.skills)
-    .map(
-      ([group, items]) => `
-        <div class="skill-group">
-          <h4>${esc(group)}</h4>
-          <ul>${items.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>
-        </div>`
-    )
-    .join("");
-
-  const contact = [];
-  if (profile.contact.email) contact.push(`<a href="mailto:${profile.contact.email}">${profile.contact.email}</a>`);
-  if (profile.contact.twitter) contact.push(`<a href="${profile.contact.twitter}" target="_blank" rel="noopener">Twitter</a>`);
-  if (profile.contact.github) contact.push(`<a href="${profile.contact.github}" target="_blank" rel="noopener">GitHub</a>`);
-  if (profile.contact.linkedin) contact.push(`<a href="${profile.contact.linkedin}" target="_blank" rel="noopener">LinkedIn</a>`);
-  if (profile.cv) contact.push(`<a href="${profile.cv}" target="_blank" rel="noopener">CV ↗</a>`);
-
-  document.getElementById("classic-content").innerHTML = `
-    <h1>${el(profile.name)}</h1>
-    <p class="subtitle">${el(profile.role)}${profile.location ? " · " + profile.location : ""}</p>
-    ${bioHtml}
-
-    <h2>Proyectos</h2>
-    <div class="project-grid">${projectCards}</div>
-
-    <h2>Skills</h2>
-    <div class="skill-cols">${skillGroups}</div>
-
-    <h2>Contacto</h2>
-    <div class="contact-links">${contact.join("")}</div>
-  `;
-
-  /* ---------- Modal de detalle ---------- */
-  const modal = ensureModal();
-
-  function openModal(p) {
-    const stack = p.stack.map((t) => `<span class="tag">${esc(t)}</span>`).join("");
-    const catTags = (p.tags || []).map((t) => `<span class="cat-tag">${esc(t)}</span>`).join("");
-    const readme = (p.readme || []).map((l) => esc(l)).join("\n");
-    const links = [];
-    if (p.links && p.links.repo)
-      links.push(`<a href="${p.links.repo}" target="_blank" rel="noopener">repo ↗</a>`);
-    if (p.links && p.links.demo)
-      links.push(`<a href="${p.links.demo}" target="_blank" rel="noopener">demo ↗</a>`);
-
-    modal.querySelector(".modal-body").innerHTML = `
-      <div class="card-head">
-        <h3>${esc(p.name)}</h3>
-        <div class="cat-tag-row">${catTags}</div>
-      </div>
-      <div class="status">● ${esc(p.status)}</div>
-      <pre class="readme">${readme}</pre>
-      <div class="tag-label">Stack</div>
-      <div class="tag-row">${stack}</div>
-      ${links.length ? `<div class="card-links">${links.join("")}</div>` : ""}
-    `;
-    modal.classList.add("open");
-    document.body.style.overflow = "hidden";
-    modal.querySelector(".modal-close").focus();
-  }
-
-  function closeModal() {
-    modal.classList.remove("open");
-    document.body.style.overflow = "";
-  }
-
-  // Listeners de las cards
-  document.querySelectorAll(".project-card").forEach((card) => {
-    const p = projectsById[card.dataset.id];
-    card.addEventListener("click", () => openModal(p));
-    card.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        openModal(p);
+  // Bio: junto las líneas en párrafos. Un string vacío separa párrafos.
+  function bioHtml() {
+    const paragraphs = [];
+    let buffer = [];
+    profile.bio.forEach((line) => {
+      if (line === "") {
+        if (buffer.length) paragraphs.push(buffer.join(" "));
+        buffer = [];
+      } else {
+        buffer.push(line);
       }
     });
-  });
+    if (buffer.length) paragraphs.push(buffer.join(" "));
+    return paragraphs.map((p) => `<p class="bio">${esc(p)}</p>`).join("");
+  }
 
-  // Cierre del modal
-  modal.querySelector(".modal-close").onclick = closeModal;
-  modal.querySelector(".modal-backdrop").onclick = closeModal;
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modal.classList.contains("open")) closeModal();
-  });
-}
+  const tagsHtml = (p) =>
+    (p.tags || []).map((t) => `<span class="cat-tag">${esc(t)}</span>`).join("");
 
-/* Crea el contenedor del modal una sola vez y lo reutiliza. */
-function ensureModal() {
-  let modal = document.getElementById("project-modal");
-  if (modal) return modal;
-  modal = document.createElement("div");
-  modal.id = "project-modal";
-  modal.className = "modal";
-  modal.innerHTML = `
-    <div class="modal-backdrop"></div>
-    <div class="modal-dialog" role="dialog" aria-modal="true">
-      <button class="modal-close" type="button" aria-label="Cerrar">✕</button>
-      <div class="modal-body"></div>
-    </div>`;
-  document.body.appendChild(modal);
-  return modal;
+  const section = (title, body) =>
+    `<section class="file-section"><h2>${esc(title)}</h2>${body}</section>`;
+
+  function projectTile(p) {
+    return `
+      <button type="button" class="file-tile" data-id="${esc(p.id)}">
+        <span class="file-icon">${ICONS.folder}</span>
+        <span class="file-text">
+          <strong>${esc(p.name)}</strong>
+          <small>${esc(p.summary)}</small>
+        </span>
+      </button>`;
+  }
+
+  function rootView() {
+    const featured = projects.filter((p) => (p.tags || []).includes("★"));
+    const others = projects.filter((p) => !(p.tags || []).includes("★"));
+
+    const skills = Object.entries(profile.skills)
+      .map(
+        ([group, items]) => `
+          <div class="skill-group">
+            <h4>${esc(group)}</h4>
+            <ul>${items.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>
+          </div>`
+      )
+      .join("");
+
+    return `
+      <header class="folder-head">
+        <h1>${esc(profile.name)}</h1>
+        <p class="subtitle">${esc(profile.role)}${profile.location ? " · " + esc(profile.location) : ""}</p>
+      </header>
+      ${section("Sobre mí", bioHtml())}
+      ${section("Proyectos destacados", `<div class="file-grid">${featured.map(projectTile).join("")}</div>`)}
+      ${section("Otros proyectos", `<div class="file-grid">${others.map(projectTile).join("")}</div>`)}
+      ${section("Skills", `<div class="skill-cols">${skills}</div>`)}`;
+  }
+
+  function projectView(p) {
+    const links = [];
+    if (p.links && p.links.repo) links.push(`<a href="${esc(p.links.repo)}" target="_blank" rel="noopener">Ver repositorio</a>`);
+    if (p.links && p.links.demo) links.push(`<a href="${esc(p.links.demo)}" target="_blank" rel="noopener">Ver demo</a>`);
+
+    return `
+      <header class="folder-head project-head">
+        <span class="project-icon">${ICONS.folder}</span>
+        <div>
+          <h1>${esc(p.name)}</h1>
+          <p class="subtitle">${esc(p.status)}</p>
+          <div class="cat-tag-row">${tagsHtml(p)}</div>
+        </div>
+      </header>
+      ${section("Léame", `<pre class="readme">${(p.readme || []).map(esc).join("\n")}</pre>`)}
+      ${section("Tecnologías", `<div class="tag-row">${p.stack.map((t) => `<span class="tag">${esc(t)}</span>`).join("")}</div>`)}
+      ${links.length ? section("Vínculos", `<div class="card-links">${links.join("")}</div>`) : ""}`;
+  }
+
+  function show() {
+    const project = projectsById[trail[position]];
+    content.innerHTML = project ? projectView(project) : rootView();
+    scroller.scrollTop = 0;
+    $("address-path").textContent = project ? `${ROOT}\\${project.name}` : ROOT;
+    $("explorer-status").textContent = project
+      ? `${project.stack.length} tecnologías`
+      : `${projects.length} objetos`;
+    $("nav-back").disabled = position === 0;
+    $("nav-forward").disabled = position === trail.length - 1;
+    $("nav-up").disabled = !project;
+  }
+
+  function go(id) {
+    if (trail[position] === id) return;
+    trail = trail.slice(0, position + 1).concat(id);
+    position += 1;
+    show();
+  }
+
+  function step(delta) {
+    position += delta;
+    show();
+  }
+
+  content.addEventListener("click", (e) => {
+    const tile = e.target.closest(".file-tile");
+    if (tile) go(tile.dataset.id);
+  });
+  $("nav-back").addEventListener("click", () => step(-1));
+  $("nav-forward").addEventListener("click", () => step(1));
+  $("nav-up").addEventListener("click", () => go(null));
+
+  // Permite abrir un proyecto desde el menú Inicio.
+  window.openProjectDetail = (id) => {
+    window.XP.open("portfolio");
+    go(id);
+  };
+  // Vuelve a la raíz, por ejemplo al abrir la ventana desde el escritorio.
+  window.showPortfolioRoot = () => go(null);
+
+  show();
 }
